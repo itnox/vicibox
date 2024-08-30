@@ -125,6 +125,13 @@ echo
 echo "  Done."
 
 echo
+echo "  Granting Recording Access..."
+sudo chmod 755 /var/spool/asterisk
+echo
+echo "  Done."
+
+
+echo
 echo "   Redirect Settings... "
 sed -i "s|\$PORTAL_redirecturl='X';|\$PORTAL_redirecturl='https://$FQDN/vicidial/welcome.php';|" $OVERRIDE_PATH
 sed -i "s|\$PORTAL_redirectadmin='https://server.ip/vicidial/admin.php';|\$PORTAL_redirectadmin='https://$FQDN/vicidial/admin.php';|" $OVERRIDE_PATH
