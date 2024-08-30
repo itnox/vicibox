@@ -126,8 +126,8 @@ echo "  Done."
 
 echo
 echo "   Redirect Settings... "
-sed -i "s/\$PORTAL_redirecturl='X';/\$PORTAL_redirecturl='https://$FQDN/vicidial/welcome.php';/" $OVERRIDE_PATH
-sed -i "s/\$PORTAL_redirectadmin='https://server.ip/vicidial/admin.php';/\$PORTAL_redirectadmin='https://$FQDN/vicidial/admin.php';/" $OVERRIDE_PATH
+sed -i "s|\$PORTAL_redirecturl='X';|\$PORTAL_redirecturl='https://$FQDN/vicidial/welcome.php';|" $OVERRIDE_PATH
+sed -i "s|\$PORTAL_redirectadmin='https://server.ip/vicidial/admin.php';|\$PORTAL_redirectadmin='https://$FQDN/vicidial/admin.php';|" $OVERRIDE_PATH
 echo
 echo "  Done."
 
@@ -140,13 +140,13 @@ echo "  Done."
 
 echo
 echo "   Firewall Changes... "
-sudo firewall-cmd --zone=public --remove-port=80/tcp --permanent
-sudo firewall-cmd --zone=public --remove-port=443/tcp --permanent
-sudo firewall-cmd --zone=public --add-port=81/tcp --permanent
-sudo firewall-cmd --zone=public --add-port=446/tcp --permanent
+sudo firewall-cmd --zone=public --remove-service=apache2 --permanent
+sudo firewall-cmd --zone=public --remove-service=apache2-ssl --permanent
+sudo firewall-cmd --zone=public --add-service=dynportal --permanent
+sudo firewall-cmd --zone=public --add-service=dynportal-ssl --permanent
 sudo firewall-cmd --zone=public --add-port=2008/tcp --permanent
 sudo firewall-cmd --zone=public --add-port=8089/tcp --permanent
-sudo firewall-cmd --zone=public --remove-port=22/tcp --permanent
+sudo firewall-cmd --zone=public --remove-service=ssh --permanent
 #sudo firewall-cmd --reload
 echo
 echo "  Done."
