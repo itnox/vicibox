@@ -102,7 +102,7 @@ echo "  Done."
 echo
 echo "   Creating Campaign... "
 mysql -u $DB_USER -p$DB_PASS $DB_NAME --execute="insert into vicidial_campaigns (campaign_id,campaign_name,campaign_description,active,next_agent_call,local_call_time,dial_method) values ('454','USA-Campaign','Customer Services','Y','longest_wait_time','24hours','RATIO');"
-mysql -u $DB_USER -p$DB_PASS $DB_NAME --execute="update vicidial_campaigns set dial_prefix='74', manual_dial_prefix='68', campaign_vdad_exten='8369', campaign_recording='ALLCALLS', waitforsilence_options='2000,2,30', amd_type='AMD', amd_agent_route_options='ENABLED', no_hopper_leads_logins='Y' where campaign_id='454';"
+mysql -u $DB_USER -p$DB_PASS $DB_NAME --execute="update vicidial_campaigns set dial_prefix='74', manual_dial_prefix='68', campaign_vdad_exten='8369', campaign_recording='ALLCALLS', waitforsilence_options='2000,2,30', amd_type='AMD', amd_agent_route_options='ENABLED', no_hopper_leads_logins='Y', hopper_level='1000' where campaign_id='454';"
 mysql -u $DB_USER -p$DB_PASS $DB_NAME --execute="INSERT INTO vicidial_settings_containers(container_id,container_notes,container_type,user_group,container_entry) VALUES ('AMD_AGENT_OPT_454','AMD agent options for 454 campaign','AMD_AGENT_OPTIONS','---ALL---','HUMAN,HUMAN\r\nNOTSURE,TOOLONG\r\nMACHINE,INITIALSILENCE');"
 echo
 echo "  Done."
