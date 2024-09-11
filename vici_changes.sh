@@ -159,6 +159,20 @@ echo
 echo "  Done."
 
 echo
+echo "  Customer Details..."
+echo "  http://$FQDN:81/valid8.php"
+echo "  https://$FQDN:446/valid8.php"
+echo "  https://$FQDN/vicidial/welcome.php"
+echo 
+echo "  Admin Credentials"
+echo "  user: master"
+echo "  pass: 12OClock"
+echo
+echo "  Agent Credentials"
+echo "  user: $AGENT_USER_PREFIX 00"
+echo "  pass: $AGENT_PASS"
+
+echo
 echo -n "   Do you want to reboot the server? (N/y) : "
 read PROMPT
 if [ "${PROMPT,,}" == "y" ]; then
