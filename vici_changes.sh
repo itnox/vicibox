@@ -12,6 +12,7 @@ ALL_IP="0.0.0.0"
 OVERRIDE_PATH="/srv/www/vhosts/dynportal/inc/defaults.inc.php"
 SSH_PORT="2008"
 SSH_CONFIG_FILE="/etc/ssh/sshd_config"
+STR="01"
 
 # Get info so we can make DB updates
 SERVER_IP=`cat /etc/astguiclient.conf | grep VARserver_ip | cut -d ">" -f2- | tr -d '[:space:]'`
@@ -169,7 +170,7 @@ echo "  user: master"
 echo "  pass: 12OClock"
 echo
 echo "  Agent Credentials"
-echo "  user: $AGENT_USER_PREFIX 00"
+echo "  user: $AGENT_USER_PREFIX$STR - $AGENT_USER_PREFIX$USERS"
 echo "  pass: $AGENT_PASS"
 
 echo
