@@ -96,7 +96,7 @@ echo "   Creating Phones... "
 for (( i = 1; i <= $USERS; i++ ))
 do
     USER_SUFFIX=$(printf "%02d" $i)
-    mysql -u $DB_USER -p$DB_PASS $DB_NAME --execute="insert into phones (extension,dialplan_number,voicemail_id,server_ip,login,pass,status,active,phone_type,fullname,protocol,local_gmt,company,picture,messages,old_messages,outbound_cid,conf_secret,phone_ip,computer_ip,is_webphone,template_id) values('$AGENT_USER_PREFIX$USER_SUFFIX','$AGENT_USER_PREFIX$USER_SUFFIX','$AGENT_USER_PREFIX$USER_SUFFIX','$SERVER_IP','$AGENT_USER_PREFIX$USER_SUFFIX','$AGENT_PASS','ACTIVE','Y','','$AGENT_USER_PREFIX$USER_SUFFIX','SIP','-5.00','','','0','0','','$AGENT_PASS','','','Y','static-RTC');"
+    mysql -u $DB_USER -p$DB_PASS $DB_NAME --execute="insert into phones (extension,dialplan_number,voicemail_id,server_ip,login,pass,status,active,phone_type,fullname,protocol,local_gmt,company,picture,messages,old_messages,outbound_cid,conf_secret,phone_ip,computer_ip,is_webphone,template_id) values('$AGENT_USER_PREFIX$USER_SUFFIX','$AGENT_USER_PREFIX$USER_SUFFIX','$AGENT_USER_PREFIX$USER_SUFFIX','$SERVER_IP','$AGENT_USER_PREFIX$USER_SUFFIX','$AGENT_PASS','ACTIVE','Y','','$AGENT_USER_PREFIX$USER_SUFFIX','SIP','-5.00','','','0','0','','$AGENT_PASS','','','Y','${HOSTNAME}-RTC');"
 done
 echo
 echo "  Done."
@@ -106,6 +106,7 @@ echo "   Creating Campaign... "
 mysql -u $DB_USER -p$DB_PASS $DB_NAME --execute="insert into vicidial_campaigns (campaign_id,campaign_name,campaign_description,active,next_agent_call,local_call_time,dial_method) values ('454','USA-Campaign','Customer Services','Y','longest_wait_time','24hours','RATIO');"
 mysql -u $DB_USER -p$DB_PASS $DB_NAME --execute="update vicidial_campaigns set dial_prefix='74', manual_dial_prefix='68', campaign_vdad_exten='8369', campaign_recording='ALLCALLS', waitforsilence_options='2000,2,30', amd_type='AMD', amd_agent_route_options='ENABLED', no_hopper_leads_logins='Y', hopper_level='1000' where campaign_id='454';"
 mysql -u $DB_USER -p$DB_PASS $DB_NAME --execute="INSERT INTO vicidial_settings_containers(container_id,container_notes,container_type,user_group,container_entry) VALUES ('AMD_AGENT_OPT_454','AMD agent options for 454 campaign','AMD_AGENT_OPTIONS','---ALL---','HUMAN,HUMAN\r\nNOTSURE,TOOLONG\r\nMACHINE,INITIALSILENCE');"
+mysql -u $DB_USER -p$DB_PASS $DB_NAME --execute="DELETE FROM phones WHERE extension IN ('callin', 'gs102')"
 echo
 echo "  Done."
 
