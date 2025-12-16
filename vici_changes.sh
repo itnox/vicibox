@@ -39,8 +39,25 @@ read USERS
 
 echo
 echo
-echo -n "  Please Enter Agent Users Password : "
-read AGENT_PASS
+
+# Generate random alphanumeric password (16 chars)
+SUGGESTED_PASS=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 16)
+
+echo "Suggested random password: $SUGGESTED_PASS"
+echo
+echo -n "Please Enter Agent User Password (press Enter to use suggested): "
+read -s AGENT_PASS
+echo
+
+# Use suggested password if user presses Enter
+if [ -z "$AGENT_PASS" ]; then
+    AGENT_PASS="$SUGGESTED_PASS"
+fi
+
+#echo
+#echo
+#echo -n "  Please Enter Agent Users Password : "
+#read AGENT_PASS
 
 echo
 echo
@@ -169,7 +186,9 @@ echo "  https://$FQDN/vicidial/welcome.php"
 echo 
 echo "  Admin Credentials"
 echo "  user: master"
-echo "  pass: 12OClock"
+#echo "  pass: 12OClock"
+SUGGESTED_MASTER_PASS=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 16)
+echo "Suggested random password: $SUGGESTED_MASTER_PASS"
 echo
 echo "  Agent Credentials"
 echo "  user: $AGENT_USER_PREFIX$STR - $AGENT_USER_PREFIX$USERS"
