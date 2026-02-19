@@ -14,6 +14,9 @@ SSH_PORT="2008"
 SSH_CONFIG_FILE="/etc/ssh/sshd_config"
 STR="01"
 
+sudo systemctl start firewalld
+sudo systemctl enable firewalld
+
 # Get info so we can make DB updates
 SERVER_IP=`cat /etc/astguiclient.conf | grep VARserver_ip | cut -d ">" -f2- | tr -d '[:space:]'`
 DB_HOST=`cat /etc/astguiclient.conf | grep VARDB_server | cut -d ">" -f2- | tr -d '[:space:]'`
