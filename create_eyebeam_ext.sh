@@ -37,7 +37,7 @@ VALUES
 INSERT INTO phones
 (extension,dialplan_number,voicemail_id,server_ip,login,pass,status,active,phone_type,fullname,protocol,local_gmt,company,picture,messages,old_messages,outbound_cid,conf_secret,phone_ip,computer_ip)
 VALUES
-('$EXT','$EXT','$EXT','$SERVER_IP','$EXT','$PASSWORD','ACTIVE','Y','','$EXT','SIP','-5.00','','','0','0','',''$PASSWORD'','','');
+('$EXT','$EXT','$EXT','$SERVER_IP','$EXT','$PASSWORD','ACTIVE','Y','','$EXT','SIP','-5.00','','','0','0','','$PASSWORD','','');
 
 EOF
 
