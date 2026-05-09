@@ -93,20 +93,24 @@ chmod -R 755 /srv/www/htdocs/agc/viciphone
 echo "   Done."
 
 # ---------------------------------------------------------------------------
-# Apache — add Listen 81 and Listen 446 if not already present
+# Apache — add Listen 81 next to Listen 80 (plain block)
+#          add Listen 446 next to Listen 443 (inside <IfModule mod_ssl.c>)
 # ---------------------------------------------------------------------------
 echo
 echo "   Configuring Apache listen ports (81, 446)..."
+
 if ! grep -q "^Listen 81$" "$APACHE_LISTEN_CONF"; then
-    echo "Listen 81" >> "$APACHE_LISTEN_CONF"
-    echo "   Added Listen 81"
+    # Insert "Listen 81" on the line immediately after "Listen 80"
+    sed -i '/^Listen 80$/a Listen 81' "$APACHE_LISTEN_CONF"
+    echo "   Added Listen 81 (after Listen 80)"
 else
     echo "   Listen 81 already present, skipping."
 fi
 
-if ! grep -q "^Listen 446$" "$APACHE_LISTEN_CONF"; then
-    echo "Listen 446" >> "$APACHE_LISTEN_CONF"
-    echo "   Added Listen 446"
+if ! grep -q "^[[:space:]]*Listen 446$" "$APACHE_LISTEN_CONF"; then
+    # Insert "Listen 446" on the line immediately after "Listen 443" (inside SSL block)
+    sed -i '/^[[:space:]]*Listen 443$/a\\t\t\t\tListen 446' "$APACHE_LISTEN_CONF"
+    echo "   Added Listen 446 (after Listen 443)"
 else
     echo "   Listen 446 already present, skipping."
 fi
