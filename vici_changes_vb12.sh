@@ -180,7 +180,8 @@ echo "   Updating crontab..."
 crontab -l 2>/dev/null > /tmp/rootcronold || touch /tmp/rootcronold
 
 # Comment out all existing VB-firewall entries (preserve them, just disable)
-sed 's|^\([^#].*\/usr\/bin\/VB-firewall.*\)$|#\1|' /tmp/rootcronold > /tmp/rootcron
+# Pattern: match any line that contains VB-firewall and does NOT already start with #
+sed '/^[^#].*VB-firewall/s/^/#/' /tmp/rootcronold > /tmp/rootcron
 
 echo '' >> /tmp/rootcron
 echo "### Checking firewall every minute for new IPs (added by vici_changes_vb12.sh)" >> /tmp/rootcron
