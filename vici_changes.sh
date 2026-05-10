@@ -175,6 +175,7 @@ sudo firewall-cmd --zone=public --remove-service=apache2-ssl --permanent
 sudo firewall-cmd --zone=public --add-service=dynportal --permanent
 sudo firewall-cmd --zone=public --add-service=dynportal-ssl --permanent
 sudo firewall-cmd --zone=public --add-port=2008/tcp --permanent
+sudo firewall-cmd --zone=external --add-port=2008/tcp --permanent
 sudo firewall-cmd --zone=public --add-port=8089/tcp --permanent
 sudo firewall-cmd --zone=public --remove-service=ssh --permanent
 #sudo firewall-cmd --reload
