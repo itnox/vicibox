@@ -70,10 +70,11 @@ MASTER_PASS=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 16)
 
 # ---------------------------------------------------------------------------
 # Apply SSL using vicibox-ssl
+# Prompts: 1) email  2) FQDN  3) confirm proceed  4) confirm DB update  5) confirm cron
 # ---------------------------------------------------------------------------
 echo
 echo "   Applying SSL Certificate for $FQDN..."
-vicibox-ssl "$FQDN" "$SSL_EMAIL"
+printf '%s\n%s\ny\ny\ny\n' "$SSL_EMAIL" "$FQDN" | vicibox-ssl
 echo "   Done."
 
 # ---------------------------------------------------------------------------
@@ -161,7 +162,7 @@ echo
 echo "   Creating Phones..."
 for (( i = 1; i <= USERS; i++ )); do
     USER_SUFFIX=$(printf "%02d" $i)
-    mysql -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" --execute="insert into phones (extension,dialplan_number,voicemail_id,server_ip,login,pass,status,active,phone_type,fullname,protocol,local_gmt,company,picture,messages,old_messages,outbound_cid,conf_secret,phone_ip,computer_ip,is_webphone,default_webphone,template_id) values('$AGENT_USER_PREFIX$USER_SUFFIX','$AGENT_USER_PREFIX$USER_SUFFIX','$AGENT_USER_PREFIX$USER_SUFFIX','$SERVER_IP','$AGENT_USER_PREFIX$USER_SUFFIX','$AGENT_PASS','ACTIVE','Y','','$AGENT_USER_PREFIX$USER_SUFFIX','SIP','-5.00','','','0','0','','$AGENT_PASS','','','Y','1','${HOSTNAME}-RTC');"
+    mysql -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" --execute="insert into phones (extension,dialplan_number,voicemail_id,server_ip,login,pass,status,active,phone_type,fullname,protocol,local_gmt,company,picture,messages,old_messages,outbound_cid,conf_secret,phone_ip,computer_ip,is_webphone,template_id) values('$AGENT_USER_PREFIX$USER_SUFFIX','$AGENT_USER_PREFIX$USER_SUFFIX','$AGENT_USER_PREFIX$USER_SUFFIX','$SERVER_IP','$AGENT_USER_PREFIX$USER_SUFFIX','$AGENT_PASS','ACTIVE','Y','','$AGENT_USER_PREFIX$USER_SUFFIX','SIP','-5.00','','','0','0','','$AGENT_PASS','','','Y','${HOSTNAME}-RTC');"
 done
 echo "   Done."
 
@@ -216,15 +217,22 @@ echo "   Done."
 
 # ---------------------------------------------------------------------------
 # Change SSH port
+# Open port 2008 in the RUNNING firewall first, then restart sshd.
+# Without this, sshd would stop listening on 22 and port 2008 would still
+# be blocked, making the server unreachable until reboot.
 # ---------------------------------------------------------------------------
 echo
 echo "   Changing SSH port to $SSH_PORT..."
+sudo firewall-cmd --zone=public --add-port=${SSH_PORT}/tcp
 sudo sed -i "s/^#Port 22/Port $SSH_PORT/" "$SSH_CONFIG_FILE"
 /sbin/service sshd restart
 echo "   Done."
 
 # ---------------------------------------------------------------------------
-# Firewall rules
+# Firewall permanent rules
+# --reload is intentionally omitted: permanent rules take effect on the
+# reboot prompted at the end of this script, keeping the session alive.
+# The runtime rule added above keeps port 2008 accessible right now.
 # ---------------------------------------------------------------------------
 echo
 echo "   Firewall Changes..."
@@ -235,7 +243,6 @@ sudo firewall-cmd --zone=public --add-service=dynportal-ssl   --permanent
 sudo firewall-cmd --zone=public --add-port=2008/tcp           --permanent
 sudo firewall-cmd --zone=public --add-port=8089/tcp           --permanent
 sudo firewall-cmd --zone=public --remove-service=ssh          --permanent
-sudo firewall-cmd --reload
 echo "   Done."
 
 # ---------------------------------------------------------------------------
@@ -264,9 +271,9 @@ echo "================================================================"
 # Reboot prompt
 # ---------------------------------------------------------------------------
 echo
-echo -n "   Do you want to reboot the server? (N/y) : "
+echo -n "   Do you want to reboot the server? (Y/n) : "
 read PROMPT
-if [ "${PROMPT,,}" == "y" ]; then
+if [ "${PROMPT,,}" != "n" ]; then
     echo "   Rebooting Server in 10 seconds..."
     sleep 10
     sudo reboot
