@@ -272,13 +272,36 @@ dynportal_only() {
   if [[ -d /var/spool/asterisk ]]; then chmod 755 /var/spool/asterisk && log 'FILE MODE /var/spool/asterisk 755'; fi
 }
 initial_setup() {
-  info 'Initial setup (single-node Asterisk)'
+  local deployment
+  info 'Initial setup (single node or cluster)'
   prepare_db || return 1
+  while :; do
+    printf '\n1) Single node (Asterisk runs on this box)\n2) Cluster (Asterisk runs on another box)\n'
+    read -r -p 'Choose deployment [1]: ' deployment
+    deployment=${deployment:-1}
+    case "$deployment" in 1|2) break;; *) err 'Choose 1 or 2';; esac
+  done
+  if [[ "$deployment" == 2 ]]; then
+    ask_asterisk_ip || return 1
+    [[ "$ASTERISK_IP" != "$SERVER_IP" ]] || { err 'Cluster Asterisk IP must differ from this box; use Single node instead'; return 1; }
+    printf 'Remote Asterisk: %s. Its HTTP/WebSocket configuration must be applied on that host.\n' "$ASTERISK_IP"
+  else
+    ASTERISK_IP=$SERVER_IP
+  fi
   ask_fqdn || return 1
-  configure_http_local && install_webphone && set_webphone_url && set_local_limits && set_master_permissions || return 1
-  # Keep the FQDN from this section; no second prompt.
+  # Common setup is identical in either deployment mode.
+  install_webphone && set_webphone_url && set_local_limits && set_master_permissions || return 1
   dynportal_apply_existing_fqdn || return 1
-  ssh_port_only && firewall_only
+  ssh_port_only && firewall_only || return 1
+  # Only modify Asterisk on the box actually running it.
+  if [[ "$deployment" == 1 ]]; then
+    configure_http_local || return 1
+  else
+    printf '\nRun the following on the remote Asterisk server (%s):\n' "$ASTERISK_IP"
+    print_remote_commands
+    log "INITIAL SETUP remote Asterisk commands provided for $ASTERISK_IP"
+  fi
+  printf '\nInitial setup completed for %s deployment.\n' "$( [[ "$deployment" == 1 ]] && printf 'single-node' || printf 'cluster' )"
 }
 dynportal_apply_existing_fqdn() {
   # Reuse existing FQDN without asking again.
